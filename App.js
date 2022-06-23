@@ -81,7 +81,7 @@ const App: () => Node = () => {
 
 const styles = StyleSheet.create({
     bkg: {
-        backgroundColor: '#00aaaa',
+        backgroundColor: '#ccffdc',
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-start',
