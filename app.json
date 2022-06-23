@@ -1,4 +1,5 @@
 {
   "name": "todos",
-  "displayName": "todos"
+  "displayName": "todos",
+  "backgroundColor": "#00aaaa",
 }
