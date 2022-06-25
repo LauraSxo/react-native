@@ -1,16 +1,21 @@
 import React from 'react';
-import {View, Image, Text, TouchableOpacity, StyleSheet, Alert, TextInput} from 'react-native';
+import {View, Image, Text, TouchableOpacity, StyleSheet, Alert, TextInput, Dimensions, useWindowDimensions} from 'react-native';
 import MainButton from '../components/MainButton';
 import Colors from '../constants/Colors';
+const ScreenWidth = Dimensions.get('screen').width;
 
 const GameOverScreen = (props) => {
+
+    const {width, height} = useWindowDimensions();
 
     function goBack() {
         props.restartHandler()
     }
 
+    const marginTop = height < 380 ? 30: 100;
+
     return (
-        <View style={styles.body}>
+        <View style={[styles.body, {marginTop: marginTop}]}>
             <Text style={styles.text}>Game is over!</Text>
             <View style={styles.buttons}>
                 <MainButton onPress={goBack} >Go back</MainButton>
@@ -28,7 +33,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10,
+        padding: ScreenWidth < 380 ? 10 : 20,
     },
     text: {
         fontSize: 48,
@@ -36,9 +41,9 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     imgBox: {
-        borderRadius: 200,
-        width: 200,
-        height: 200,
+        borderRadius: ScreenWidth < 380 ? 150 : 200,
+        width: ScreenWidth < 380 ? 150 : 200,
+        height: ScreenWidth < 380 ? 150 : 200,
         borderWidth: 3,
         borderColor: Colors.mint,
         overflow: 'hidden',

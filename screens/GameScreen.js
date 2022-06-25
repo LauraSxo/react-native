@@ -1,5 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {View, FlatList, Text, TouchableOpacity, StyleSheet, Alert, TextInput} from 'react-native';
+import {
+    View,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    TextInput,
+    KeyboardAvoidingView,
+    ScrollView,
+    useWindowDimensions,
+} from 'react-native';
 import MainButton from '../components/MainButton';
 import Title from '../components/Title';
 import Colors from '../constants/Colors';
@@ -22,6 +33,7 @@ const GameScreen = (props) => {
         const initialGuess = generateRandom(1, 100, number);
         const [curGuess, setCurGuess] = useState(initialGuess);
         const [guessedRounds, setGuessedRounds] = useState([initialGuess]);
+        const {width, height} = useWindowDimensions();
 
         useEffect(() => {
             if (curGuess == number) {
@@ -57,40 +69,48 @@ const GameScreen = (props) => {
         }
 
         return (
-            <View style={styles.body}>
-                <Title>Opponent's guess:</Title>
-                <Text style={styles.guess}>{curGuess}</Text>
-                <View style={styles.guessWindow}>
-                    <Text>Higher or lower?</Text>
-                    <View style={styles.buttons}>
-                        <View style={styles.button}>
-                            <MainButton onPress={nextGuessHandler.bind(this, 'lower')}>
-                                <FontAwesomeIcon name="angle-left" size={24}/>
-                            </MainButton>
+            <ScrollView style={styles.screen}>
+                <KeyboardAvoidingView style={styles.screen} behaviour='position'>
+                    <View style={styles.body}>
+                        <Title>Opponent's guess:</Title>
+                        <Text style={styles.guess}>{curGuess}</Text>
+                        <View style={styles.guessWindow}>
+                            <Text>Higher or lower?</Text>
+                            <View style={styles.buttons}>
+                                <View style={styles.button}>
+                                    <MainButton onPress={nextGuessHandler.bind(this, 'lower')}>
+                                        <FontAwesomeIcon name="angle-left" size={24}/>
+                                    </MainButton>
+                                </View>
+                                <View style={styles.button}>
+                                    <MainButton onPress={nextGuessHandler.bind(this, 'higher')}>
+                                        <FontAwesomeIcon name="angle-right" size={24}/>
+                                    </MainButton>
+                                </View>
+                            </View>
                         </View>
-                        <View style={styles.button}>
-                            <MainButton onPress={nextGuessHandler.bind(this, 'higher')}>
-                                <FontAwesomeIcon name="angle-right" size={24}/>
-                            </MainButton>
+                        <View style={styles.flatContainer}>
+                            {/*<Text>Log rounds:</Text>*/}
+                            <FlatList style={styles.roundList} data={guessedRounds} keyExtractor={(item) => item}
+                                      renderItem={({item, index}) =>
+                                          <View style={styles.roundItem}>
+                                              <Text>#{index}</Text>
+                                              <Text style={styles.round}>{item}</Text>
+                                          </View>
+                                      }></FlatList>
                         </View>
                     </View>
-                </View>
-                <View style={styles.flatContainer}>
-                    {/*<Text>Log rounds:</Text>*/}
-                    <FlatList style={styles.roundList} data={guessedRounds} keyExtractor={(item) => item}
-                              renderItem={({item, index}) =>
-                                  <View style={styles.roundItem}>
-                                      <Text>#{index}</Text>
-                                      <Text style={styles.round}>{item}</Text>
-                                  </View>
-                              }></FlatList>
-                </View>
-            </View>
+                </KeyboardAvoidingView>
+            </ScrollView>
         );
     }
 ;
 
 const styles = StyleSheet.create({
+    screen: {
+        // flex: 1,
+        height: '100%',
+    },
     body: {
         flex: 1,
         // justifyContent: 'center',

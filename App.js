@@ -14,6 +14,8 @@ import {
     View,
     ImageBackground,
     SafeAreaView,
+    StatusBar,
+
 } from 'react-native';
 
 
@@ -47,7 +49,7 @@ const App: () => Node = () => {
     let screen = <StartGameScreen handler={pickedNumberHandler}/>;
 
     if (userNumber) {
-        screen = <GameScreen number={userNumber} setGameOverHandler={setGameOverHandler} />;
+        screen = <GameScreen number={userNumber} setGameOverHandler={setGameOverHandler}/>;
     }
 
     if (gameOver && userNumber) {
@@ -55,14 +57,17 @@ const App: () => Node = () => {
     }
 
     return (
-        <SafeAreaView style={styles.main}>
-            <ImageBackground source={require('./assets/background.png')} resizeMode='cover' style={styles.main}
-                             imageStyle={styles.bkgImage}>
-                {/*<SafeAreaView style={styles.main}>*/}
+        <>
+            <StatusBar style='light'/>
+            <SafeAreaView style={styles.main}>
+                <ImageBackground source={require('./assets/background.png')} resizeMode='cover' style={styles.main}
+                                 imageStyle={styles.bkgImage}>
+                    {/*<SafeAreaView style={styles.main}>*/}
                     {screen}
-                {/*</SafeAreaView>*/}
-            </ImageBackground>
-        </SafeAreaView>
+                    {/*</SafeAreaView>*/}
+                </ImageBackground>
+            </SafeAreaView>
+        </>
     );
 };
 
