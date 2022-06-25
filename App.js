@@ -32,12 +32,9 @@ const App: () => Node = () => {
         setGameOver(false);
     }
 
-    function setGameOverHandler() {
+    function setGameOverHandler(rounds) {
         setGameOver(true);
-    }
-
-    function setRoundsHandler() {
-        setRounds(prev => {return prev + 1});
+        setRounds(rounds);
     }
 
     function restartHandler() {
@@ -50,7 +47,7 @@ const App: () => Node = () => {
     let screen = <StartGameScreen handler={pickedNumberHandler}/>;
 
     if (userNumber) {
-        screen = <GameScreen number={userNumber} setGameOverHandler={setGameOverHandler} setRoundsHandler={setRoundsHandler}/>;
+        screen = <GameScreen number={userNumber} setGameOverHandler={setGameOverHandler} />;
     }
 
     if (gameOver && userNumber) {

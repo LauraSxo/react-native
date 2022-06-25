@@ -25,7 +25,7 @@ const GameScreen = (props) => {
 
         useEffect(() => {
             if (curGuess == number) {
-                setGameOverHandler();
+                setGameOverHandler(guessedRounds.length);
             }
         }, [curGuess, number, setGameOverHandler]);
 
@@ -52,7 +52,6 @@ const GameScreen = (props) => {
             }
 
             let guess = generateRandom(curMin, curMax, curGuess);
-            props.setRoundsHandler();
             setGuessedRounds((prev) => [...prev, guess]);
             setCurGuess(guess);
         }
