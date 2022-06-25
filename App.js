@@ -6,107 +6,79 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
+    StyleSheet,
+    Text,
+    View,
+    ImageBackground,
+    SafeAreaView,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import StartGameScreen from './screens/StartGameScreen';
+import GameScreen from './screens/GameScreen';
+import Colors from './constants/Colors';
+import GameOverScreen from './screens/GameOverScreen';
 
 const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+    const [userNumber, setUserNumber] = useState();
+    const [gameOver, setGameOver] = useState(true);
+    const [rounds, setRounds] = useState(0);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    function pickedNumberHandler(num) {
+        setUserNumber(num);
+        setGameOver(false);
+    }
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+    function setGameOverHandler() {
+        setGameOver(true);
+    }
+
+    function setRoundsHandler() {
+        setRounds(prev => {return prev + 1});
+    }
+
+    function restartHandler() {
+        setUserNumber(null);
+        setRounds(0);
+        setGameOverHandler(false);
+        pickedNumberHandler('');
+    }
+
+    let screen = <StartGameScreen handler={pickedNumberHandler}/>;
+
+    if (userNumber) {
+        screen = <GameScreen number={userNumber} setGameOverHandler={setGameOverHandler} setRoundsHandler={setRoundsHandler}/>;
+    }
+
+    if (gameOver && userNumber) {
+        screen = <GameOverScreen restartHandler={restartHandler} userNumber={userNumber} rounds={rounds}/>
+    }
+
+    return (
+        <SafeAreaView style={styles.main}>
+            <ImageBackground source={require('./assets/background.png')} resizeMode='cover' style={styles.main}
+                             imageStyle={styles.bkgImage}>
+                {/*<SafeAreaView style={styles.main}>*/}
+                    {screen}
+                {/*</SafeAreaView>*/}
+            </ImageBackground>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+    main: {
+        flex: 1,
+        backgroundColor: Colors.mint,
+        // alignItems: 'center',
+        // justifyContent: 'center',
+    },
+    bkgImage: {
+        opacity: 0.15,
+    },
 });
 
 export default App;
