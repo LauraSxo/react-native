@@ -1,26 +1,41 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useLayoutEffect, useContext} from 'react';
 import {View, ScrollView, Text, Pressable, StyleSheet, Alert, TextInput, Image} from 'react-native';
 import {MEALS} from '../data/dummy-data';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconButton from '../components/ui/IconButton';
+// import {FavouritesContext} from '../store/context/favourite-context';
+import {useDispatch, useSelector} from 'react-redux';
+import {addFavourite, removeFavourite} from '../store/redux/favorites';
 
 const MealScreen = ({route, navigation}) => {
-
     const {mealId} = route.params;
-
     const meal = MEALS.find((item) => item.id === mealId);
     const {
         title, affordability, complexity, imageUrl, duration, ingredients, steps, isGlutenFree, isVegan, isVegetarian, isLactoseFree,
     } = meal;
 
-    function setFavourite() {
+    // const favMealsContext = useContext(FavouritesContext);
+    // const isFavorite = favMealsContext.ids.includes(mealId);
 
-    }
+    const dispatch = useDispatch();
+    const favMealIds = useSelector((state) => state.favoriteMeals.ids);
+    const isFavorite = favMealIds.includes(mealId);
+
+
+    function setFavourite() {
+        if (isFavorite) {
+            // favMealsContext.removeFavourite(mealId);
+            dispatch(removeFavourite({id: mealId}));
+        } else {
+            dispatch(addFavourite({id: mealId}));
+            // favMealsContext.addFavourite(mealId);
+        }
+    };
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: title,
-            headerRight: () => (<IconButton icon='heart' onPress={setFavourite} />),
+            headerRight: () => (<IconButton icon='heart' color={isFavorite? 'white' : '#aaa'} onPress={setFavourite} />),
         });
     }, [navigation, setFavourite]);
 

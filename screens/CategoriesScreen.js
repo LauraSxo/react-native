@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, FlatList, Text, StyleSheet} from 'react-native';
 import {CATEGORIES} from '../data/dummy-data';
 import Card from '../components/ui/Card';
