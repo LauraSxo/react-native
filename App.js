@@ -25,6 +25,8 @@ import RecentExpensesScreen from './screens/RecentExpensesScreen';
 import ManageExpensesScreen from './screens/ManageExpensesScreen';
 import {GlobalStyles} from './constants/styles';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import IconButton from './components/ui/IconButton';
+import ExpensesContextProvider from './store/expenseContext'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,30 +37,45 @@ const stackOptions = {
     },
     headerTintColor: 'white',
     contentStyle: {
-        backgroundColor:  GlobalStyles.colors.primary50,
+        backgroundColor: GlobalStyles.colors.primary50,
     },
     sceneContainerStyle: {
         backgroundColor: '#ecd6a7',
     },
-    tabBarStyle: {
-        backgroundColor: GlobalStyles.colors.primary500
-    },
-    tabBarActiveTintColor: GlobalStyles.colors.accent500
 
 };
 
+const tabOptions = {};
+
 function ExpensesOverview() {
     return (
-        <Tab.Navigator screenOptions={stackOptions}>
+        <Tab.Navigator screenOptions={({navigation}) =>
+            ({
+                headerStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                },
+                headerTintColor: 'white',
+                contentStyle: {
+                    backgroundColor: GlobalStyles.colors.primary50,
+                },
+                tabBarStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                },
+                tabBarActiveTintColor: GlobalStyles.colors.accent500,
+                headerRight: ({tintColor}) => <IconButton color={tintColor} size={20} icon={'plus'} onPress={() => {
+                    navigation.navigate('ManageExpense');
+                }}/>,
+            })
+        }>
             <Tab.Screen name='RecentExpenses' component={RecentExpensesScreen} options={{
                 title: 'Recent Expenses',
                 tabBarLabel: 'Recent',
-                tabBarIcon: ({color, size}) => (<Icon name='hourglass' color={color} size={size} />)
+                tabBarIcon: ({color, size}) => (<Icon name='hourglass' color={color} size={size}/>),
             }}/>
             <Tab.Screen name='AllExpenses' component={ExpensesScreen} options={{
                 title: 'All Expenses',
                 tabBarLabel: 'All',
-                tabBarIcon: ({color, size}) => (<Icon name='calendar' color={color} size={size} />)
+                tabBarIcon: ({color, size}) => (<Icon name='calendar' color={color} size={size}/>),
             }}/>
         </Tab.Navigator>
     );
@@ -71,14 +88,18 @@ const App: () => Node = () => {
             <StatusBar barStyle='light-content'/>
             {/*<ScrollView*/}
             {/*    contentInsetAdjustmentBehavior="automatic">*/}
-            <NavigationContainer>
-                <Stack.Navigator screenOptions={stackOptions}>
-                    <Stack.Screen name='Overview' component={ExpensesOverview} options={{
-                        headerShown: false
-                    }}/>
-                    <Stack.Screen name='ManageExpense' component={ManageExpensesScreen}/>
-                </Stack.Navigator>
-            </NavigationContainer>
+            <ExpensesContextProvider>
+                <NavigationContainer>
+                    <Stack.Navigator screenOptions={stackOptions}>
+                        <Stack.Screen name='Overview' component={ExpensesOverview} options={{
+                            headerShown: false,
+                        }}/>
+                        <Stack.Screen name='ManageExpense' component={ManageExpensesScreen} options={{
+                            presentation: 'modal',
+                        }}/>
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </ExpensesContextProvider>
             {/*</ScrollView>*/}
         </SafeAreaView>
     );
