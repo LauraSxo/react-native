@@ -6,9 +6,11 @@ import {ExpenseContext} from '../store/expenseContext';
 import ExpenseForm from '../components/manageExpense/ExpenseForm';
 import {storeExpense, updateExpense, deleteExpense} from '../utility/http';
 import Loader from '../components/ui/loader';
+import ErrorOverlay from '../components/ui/errorOverlay';
 
 const ManageExpensesScreen = ({route, navigation}) => {
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState();
 
     const expenseId = route.params?.expenseId;
     const isEditing = !!expenseId;
@@ -27,8 +29,12 @@ const ManageExpensesScreen = ({route, navigation}) => {
     async function deletExpense() {
         navigation.goBack();
         setLoading(true)
-        await deleteExpense(expenseId);
-        expensesCtx.deleteExpense(expenseId);
+        try {
+            await deleteExpense(expenseId);
+            expensesCtx.deleteExpense(expenseId);
+        } catch (e) {
+            setError('Couldn\'t delete')
+        }
         setLoading(false)
     }
 
@@ -38,15 +44,27 @@ const ManageExpensesScreen = ({route, navigation}) => {
 
     async function confirmHandler(expense) {
         setLoading(true)
-        if (isEditing) {
-            expensesCtx.updateExpense(expenseId, expense);
-            await updateExpense(expenseId, expense);
-        } else {
-            const id = await storeExpense(expense);
-            expensesCtx.addExpense({...expense, id: id});
+        try {
+            if (isEditing) {
+                expensesCtx.updateExpense(expenseId, expense);
+                await updateExpense(expenseId, expense);
+            } else {
+                const id = await storeExpense(expense);
+                expensesCtx.addExpense({...expense, id: id});
+            }
+            navigation.goBack();
+        } catch (e) {
+            setError('Couldn\'t save data')
+            setLoading(false)
         }
-        setLoading(false)
-        navigation.goBack();
+    }
+
+    function errorHandler() {
+        setError(null)
+    }
+
+    if (error && !loading) {
+        return <ErrorOverlay message={error} onConfirm={errorHandler}/>;
     }
 
     if (loading) {

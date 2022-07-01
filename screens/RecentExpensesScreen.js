@@ -5,32 +5,47 @@ import {ExpenseContext} from '../store/expenseContext';
 import {getDateMinusDays} from '../utility/date';
 import {fetchExpenses} from '../utility/http';
 import Loader from '../components/ui/loader';
+import ErrorOverlay from '../components/ui/errorOverlay';
 
 const RecentExpensesScreen = (props) => {
     const expensesCxt = useContext(ExpenseContext);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState();
     // const [fetchedExpenses, setFetchedExpenses] = useState([]);
 
     useEffect(() => {
         async function getExpenses() {
-            setLoading(true)
-            const expenses = await fetchExpenses()
-            setLoading(false)
-            expensesCxt.setExpenses(expenses)
+            setLoading(true);
+            try {
+                const expenses = await fetchExpenses();
+                expensesCxt.setExpenses(expenses);
+            } catch (e) {
+                setError('Couldn\'t set expenses');
+            }
+            setLoading(false);
             // setFetchedExpenses(expenses)
         }
+
         getExpenses();
     }, [fetchExpenses]);
 
+    function errorHandler() {
+        setError(null)
+    }
+
+    if (error && !loading) {
+        return <ErrorOverlay message={error} onConfirm={errorHandler}/>;
+    }
+
     if (loading) {
-        return <Loader/>
+        return <Loader/>;
     }
 
     const recentExpenses = expensesCxt.expenses.filter((v) => {
         const today = new Date();
         const days7ago = getDateMinusDays(today, 7);
-        return v.date > days7ago
-    })
+        return v.date > days7ago;
+    });
 
     return (
         <View style={styles.body}>
