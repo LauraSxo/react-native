@@ -20,15 +20,18 @@ const ExpenseForm = (props) => {
     });
 
     function amountChangedHandler(curAmount) {
-        setAmount(curAmount)
+        let newAmount = {...amount, value: curAmount}
+        setAmount(newAmount)
     }
 
     function dateChangeHandler(curDate) {
-        setDate(curDate)
+        let newDate = {...date, value: curDate}
+        setDate(newDate)
     }
 
     function descrChangeHandler(curDescription) {
-        setDescription(curDescription)
+        let newDescr = {...description, value: curDescription}
+        setDescription(newDescr)
     }
 
     function submitHandler() {
