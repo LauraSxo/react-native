@@ -4,6 +4,7 @@ import IconButton from '../components/ui/IconButton';
 import {GlobalStyles} from '../constants/styles';
 import MyButton from '../components/ui/MyButton';
 import {ExpenseContext} from '../store/expenseContext';
+import ExpenseForm from '../components/manageExpense/ExpenseForm';
 
 const ManageExpensesScreen = ({route, navigation}) => {
 
@@ -11,6 +12,8 @@ const ManageExpensesScreen = ({route, navigation}) => {
     const isEditing = !!expenseId;
 
     const expensesCtx = useContext(ExpenseContext);
+
+    const selectedExpense = expensesCtx.expenses.find((e) => e.id === expenseId)
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -28,21 +31,19 @@ const ManageExpensesScreen = ({route, navigation}) => {
         navigation.goBack();
     }
 
-    function confirmHandler() {
+    function confirmHandler(expense) {
         if (isEditing) {
-            expensesCtx.updateExpense();
+            expensesCtx.updateExpense(expenseId, expense);
         } else {
-            expensesCtx.addExpense({description: 'descr', amount: 5.33, date: new Date()});
+            expensesCtx.addExpense(expense);
         }
         navigation.goBack();
     }
 
     return (
         <View style={styles.body}>
-            <View style={styles.buttons}>
-                <MyButton onPress={cancelHandler} mode={'flat'} style={styles.button} >Cancel</MyButton>
-                <MyButton onPress={confirmHandler} mode={'flat'} style={styles.button} >{isEditing ? 'Update' : 'Add'}</MyButton>
-            </View>
+            <ExpenseForm cancelHandler={cancelHandler} confirmLabel={isEditing ? 'Update' : 'Add'} defaultExpense={selectedExpense}
+                         confirmHandler={confirmHandler}/>
             {isEditing && (<View style={styles.deleteContainer}><IconButton icon={'trash'} color={GlobalStyles.colors.error500} size={36} onPress={deleteExpense}/></View>)}
         </View>
     );
@@ -52,15 +53,6 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         padding: 24,
-    },
-    buttons: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: {
-        minWidth: 120,
-        marginHorizontal: 8,
     },
     deleteContainer: {
         marginTop: 16,
